@@ -1,0 +1,5 @@
+name: MinigameFramework
+version: '1.0'
+author: Ocelot
+main: io.github.ocelot.minigame.MinigameFramework
+api-version: 1.17
