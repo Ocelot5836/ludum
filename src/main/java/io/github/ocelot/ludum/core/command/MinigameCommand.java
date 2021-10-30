@@ -1,9 +1,9 @@
-package io.github.ocelot.minigame.core.command;
+package io.github.ocelot.ludum.core.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
-import io.github.ocelot.minigame.MinigameFramework;
-import io.github.ocelot.minigame.api.MinigameManager;
+import io.github.ocelot.ludum.Ludum;
+import io.github.ocelot.ludum.api.MinigameManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.NamespacedKey;
@@ -22,7 +22,7 @@ public class MinigameCommand extends BaseCommand
     @Description("Starts a new minigame in a server")
     public static void onStart(Player player, @Values("@games") NamespacedKey game, @Single String name)
     {
-        MinigameFramework.getInstance().getMinigameManager().start(name, game).handleAsync((value, e) ->
+        Ludum.getInstance().getMinigameManager().start(name, game).handleAsync((value, e) ->
         {
             if (e != null)
             {
@@ -34,7 +34,7 @@ public class MinigameCommand extends BaseCommand
                 player.sendMessage(Component.text("Created " + name + " running minigame: " + game));
             }
             return value;
-        }, MinigameFramework.getInstance().getMainExecutor());
+        }, Ludum.getInstance().getMainExecutor());
     }
 
     @Subcommand("stop")
@@ -45,7 +45,7 @@ public class MinigameCommand extends BaseCommand
     {
         try
         {
-            MinigameFramework.getInstance().getMinigameManager().stop(name);
+            Ludum.getInstance().getMinigameManager().stop(name);
             player.sendMessage(Component.text("Stopped " + name));
         }
         catch (Exception e)
@@ -62,7 +62,7 @@ public class MinigameCommand extends BaseCommand
     {
         try
         {
-            MinigameManager.RunningGame game = MinigameFramework.getInstance().getMinigameManager().getRunningGame(name).orElseThrow(() -> new CommandException("Unknown game server: " + name));
+            MinigameManager.RunningGame game = Ludum.getInstance().getMinigameManager().getRunningGame(name).orElseThrow(() -> new CommandException("Unknown game server: " + name));
             if (!game.addPlayer(target != null ? target : player))
                 throw new CommandException("Minigame does not accept players: " + name);
         }
@@ -80,7 +80,7 @@ public class MinigameCommand extends BaseCommand
         try
         {
             Player p = target != null ? target : player;
-            MinigameManager.RunningGame game = MinigameFramework.getInstance().getMinigameManager().getRunningGame(p.getWorld().getUID()).orElseThrow(() -> new CommandException("Player is not in minigame"));
+            MinigameManager.RunningGame game = Ludum.getInstance().getMinigameManager().getRunningGame(p.getWorld().getUID()).orElseThrow(() -> new CommandException("Player is not in minigame"));
             game.removePlayer(target != null ? target : player);
         }
         catch (Exception e)
@@ -93,13 +93,13 @@ public class MinigameCommand extends BaseCommand
     @Description("Lists all running minigame servers")
     public static void onList(@Single Player player)
     {
-        if (MinigameFramework.getInstance().getMinigameManager().getRunningGames().isEmpty())
+        if (Ludum.getInstance().getMinigameManager().getRunningGames().isEmpty())
         {
             player.sendMessage(Component.text("No Servers Running"));
         }
         else
         {
-            player.sendMessage(Component.text("Current Servers: " + String.join(", ", MinigameFramework.getInstance().getMinigameManager().getRunningGames())));
+            player.sendMessage(Component.text("Current Servers: " + String.join(", ", Ludum.getInstance().getMinigameManager().getRunningGames())));
         }
     }
 }

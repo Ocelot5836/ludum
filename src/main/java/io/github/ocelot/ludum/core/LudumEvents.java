@@ -1,7 +1,7 @@
-package io.github.ocelot.minigame.core;
+package io.github.ocelot.ludum.core;
 
 import com.destroystokyo.paper.event.server.ServerTickStartEvent;
-import io.github.ocelot.minigame.MinigameFramework;
+import io.github.ocelot.ludum.Ludum;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,15 +10,15 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal
-public class MinigameFrameworkEvents implements Listener
+public class LudumEvents implements Listener
 {
     @EventHandler
     public void onEvent(PlayerJoinEvent event)
     {
         Player player = event.getPlayer();
-        if (MinigameFramework.getInstance().getMinigameManager().getRunningGame(player.getWorld().getUID()).isPresent())
+        if (Ludum.getInstance().getMinigameManager().getRunningGame(player.getWorld().getUID()).isPresent())
         {
-            player.teleport(MinigameFramework.getInstance().getOverworld().getSpawnLocation());
+            player.teleport(Ludum.getInstance().getOverworld().getSpawnLocation());
         }
     }
 
@@ -26,12 +26,12 @@ public class MinigameFrameworkEvents implements Listener
     public void onEvent(PlayerQuitEvent event)
     {
         Player player = event.getPlayer();
-        MinigameFramework.getInstance().getMinigameManager().getRunningGame(player.getWorld().getUID()).ifPresent(game -> game.removePlayer(player));
+        Ludum.getInstance().getMinigameManager().getRunningGame(player.getWorld().getUID()).ifPresent(game -> game.removePlayer(player));
     }
 
     @EventHandler
     public void onEvent(ServerTickStartEvent event)
     {
-        MinigameFramework.getInstance().getMinigameManager().tick();
+        Ludum.getInstance().getMinigameManager().tick();
     }
 }

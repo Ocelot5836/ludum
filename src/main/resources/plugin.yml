@@ -1,5 +1,5 @@
-name: MinigameFramework
-version: '1.0'
+name: Ludum
+version: '1.0.0'
 author: Ocelot
-main: io.github.ocelot.minigame.MinigameFramework
+main: io.github.ocelot.ludum.Ludum
 api-version: 1.17

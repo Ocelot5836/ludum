@@ -1,6 +1,6 @@
-package io.github.ocelot.minigame.api;
+package io.github.ocelot.ludum.api;
 
-import io.github.ocelot.minigame.MinigameFramework;
+import io.github.ocelot.ludum.Ludum;
 import org.apache.logging.log4j.Logger;
 
 /**
@@ -15,7 +15,7 @@ public abstract class MinigameState
 
     public MinigameState(Minigame minigame)
     {
-        this.logger = MinigameFramework.getInstance().getLog4JLogger();
+        this.logger = Ludum.getInstance().getLog4JLogger();
         this.minigame = minigame;
     }
 

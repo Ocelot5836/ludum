@@ -1,11 +1,11 @@
-package io.github.ocelot.minigame;
+package io.github.ocelot.ludum;
 
 import co.aikar.commands.PaperCommandManager;
 import com.google.common.util.concurrent.MoreExecutors;
-import io.github.ocelot.minigame.api.MinigameManager;
-import io.github.ocelot.minigame.api.MinigameRegistry;
-import io.github.ocelot.minigame.core.MinigameFrameworkEvents;
-import io.github.ocelot.minigame.core.command.MinigameCommand;
+import io.github.ocelot.ludum.api.MinigameManager;
+import io.github.ocelot.ludum.api.MinigameRegistry;
+import io.github.ocelot.ludum.core.LudumEvents;
+import io.github.ocelot.ludum.core.command.MinigameCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -27,24 +27,24 @@ import java.util.stream.Collectors;
  *
  * @author Ocelot
  */
-public class MinigameFramework extends JavaPlugin
+public class Ludum extends JavaPlugin
 {
     private static final AtomicInteger WORKER_COUNT = new AtomicInteger(1);
-    private static MinigameFramework instance;
+    private static Ludum instance;
 
     private World overworld;
     private Executor mainExecutor;
     private ExecutorService backgroundExecutor;
     private MinigameManager minigameManager;
 
-    public MinigameFramework()
+    public Ludum()
     {
     }
 
     @Override
     public void onEnable()
     {
-        MinigameFramework.instance = this;
+        Ludum.instance = this;
 
         MinigameRegistry.flush();
 
@@ -89,7 +89,7 @@ public class MinigameFramework extends JavaPlugin
 
         this.minigameManager = new MinigameManager();
 
-        Path minigamesFolder = MinigameFramework.getInstance().getDataFolder().toPath().resolve("minigames");
+        Path minigamesFolder = Ludum.getInstance().getDataFolder().toPath().resolve("minigames");
         if (!Files.exists(minigamesFolder))
         {
             this.backgroundExecutor.execute(() ->
@@ -110,7 +110,7 @@ public class MinigameFramework extends JavaPlugin
         commandManager.getCommandCompletions().registerCompletion("games", context -> MinigameRegistry.getKeys().stream().map(NamespacedKey::asString).collect(Collectors.toUnmodifiableSet()));
         commandManager.getCommandCompletions().registerCompletion("names", context -> this.minigameManager.getRunningGames());
 
-        this.getServer().getPluginManager().registerEvents(new MinigameFrameworkEvents(), this);
+        this.getServer().getPluginManager().registerEvents(new LudumEvents(), this);
 
         Bukkit.getLogger().info(ChatColor.GREEN + "Enabled Starter!");
     }
@@ -166,7 +166,7 @@ public class MinigameFramework extends JavaPlugin
     /**
      * @return The static instance of the plugin
      */
-    public static MinigameFramework getInstance()
+    public static Ludum getInstance()
     {
         return instance;
     }

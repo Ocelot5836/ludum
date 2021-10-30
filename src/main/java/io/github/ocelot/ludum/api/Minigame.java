@@ -1,7 +1,7 @@
-package io.github.ocelot.minigame.api;
+package io.github.ocelot.ludum.api;
 
-import io.github.ocelot.minigame.MinigameFramework;
-import io.github.ocelot.minigame.core.DefaultMinigameState;
+import io.github.ocelot.ludum.Ludum;
+import io.github.ocelot.ludum.core.DefaultMinigameState;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -23,7 +23,7 @@ public abstract class Minigame
     public Minigame(String world)
     {
         this.worldName = world;
-        this.logger = MinigameFramework.getInstance().getLog4JLogger();
+        this.logger = Ludum.getInstance().getLog4JLogger();
         this.state = new DefaultMinigameState(this);
     }
 
@@ -58,7 +58,7 @@ public abstract class Minigame
     {
         if (this.world != null)
         {
-            MinigameManager manager = MinigameFramework.getInstance().getMinigameManager();
+            MinigameManager manager = Ludum.getInstance().getMinigameManager();
             manager.getRunningGame(this.world.getUID()).ifPresent(game -> manager.stop(game.getName()));
         }
     }

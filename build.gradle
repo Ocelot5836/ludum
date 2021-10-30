@@ -2,10 +2,12 @@ plugins {
     id "java"
     id "xyz.jpenilla.run-paper" version "1.0.4"
     id "com.github.johnrengelman.shadow" version "7.0.0"
+    id 'maven-publish'
 }
 
-group = "minigame-framework"
-version = "1.0"
+version = "1.0.0"
+group = "io.github.ocelot"
+archivesBaseName = "ludum"
 
 configurations {
     shadow
@@ -28,12 +30,34 @@ dependencies {
     implementation "io.papermc.paper:paper-api:1.17.1-R0.1-SNAPSHOT"
 }
 
+jar {
+    classifier "slim"
+}
+
 shadowJar {
     configurations = [project.configurations.shadow]
     relocate 'co.aikar.commands', 'io.github.ocelot.minigame.acf'
     relocate 'co.aikar.locales', 'io.github.ocelot.minigame.locales'
-    classifier "shadow"
+    classifier ""
 }
 
 build.dependsOn("shadowJar")
-build.dependsOn("reobfJar")
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact shadowJar
+        }
+    }
+    repositories {
+        if (project.hasProperty("jacksonMavenUser") && project.hasProperty("jacksonMavenPass")) {
+            maven {
+                url "https://maven.jaackson.me"
+                credentials {
+                    username = project.properties.jacksonMavenUser
+                    password = project.properties.jacksonMavenPass
+                }
+            }
+        }
+    }
+}

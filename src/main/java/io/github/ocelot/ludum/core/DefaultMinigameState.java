@@ -1,7 +1,7 @@
-package io.github.ocelot.minigame.core;
+package io.github.ocelot.ludum.core;
 
-import io.github.ocelot.minigame.api.Minigame;
-import io.github.ocelot.minigame.api.MinigameState;
+import io.github.ocelot.ludum.api.Minigame;
+import io.github.ocelot.ludum.api.MinigameState;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Internal

@@ -1,6 +1,6 @@
-package io.github.ocelot.minigame.api;
+package io.github.ocelot.ludum.api;
 
-import io.github.ocelot.minigame.MinigameFramework;
+import io.github.ocelot.ludum.Ludum;
 import org.bukkit.*;
 import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
@@ -86,7 +86,7 @@ public class MinigameManager
                     deleteRecursive(dst);
                 Files.createDirectories(dst);
 
-                Path src = MinigameFramework.getInstance().getDataFolder().toPath().resolve("minigames/" + name);
+                Path src = Ludum.getInstance().getDataFolder().toPath().resolve("minigames/" + name);
                 if (Files.isDirectory(src))
                 {
                     Files.walkFileTree(src, new SimpleFileVisitor<>()
@@ -108,7 +108,7 @@ public class MinigameManager
                     return;
                 }
 
-                try (ZipInputStream zip = new ZipInputStream(new FileInputStream(MinigameFramework.getInstance().getDataFolder().toPath().resolve("minigames/" + name + ".zip").toFile())))
+                try (ZipInputStream zip = new ZipInputStream(new FileInputStream(Ludum.getInstance().getDataFolder().toPath().resolve("minigames/" + name + ".zip").toFile())))
                 {
                     ZipEntry entry = zip.getNextEntry();
                     while (entry != null)
@@ -141,7 +141,7 @@ public class MinigameManager
             {
                 throw new CompletionException("Failed to load world ZIP: " + name + ".zip", e);
             }
-        }, MinigameFramework.getInstance().getBackgroundExecutor());
+        }, Ludum.getInstance().getBackgroundExecutor());
     }
 
     @ApiStatus.Internal
@@ -179,11 +179,11 @@ public class MinigameManager
         this.runningGames.put(name, CREATING);
 
         Minigame minigame = MinigameRegistry.create(minigameName);
-        Executor executor = MinigameFramework.getInstance().getMainExecutor();
+        Executor executor = Ludum.getInstance().getMainExecutor();
         int id = this.nextId();
         return this.loadWorld(minigame.getWorldName(), "mini" + id).thenApplyAsync(__ ->
         {
-            World world = Bukkit.createWorld(new WorldCreator("mini" + id, new NamespacedKey(MinigameFramework.getInstance(), "mini" + id)));
+            World world = Bukkit.createWorld(new WorldCreator("mini" + id, new NamespacedKey(Ludum.getInstance(), "mini" + id)));
             if (world == null)
                 throw new CommandException("Failed to create minigame server");
             RunningGame game = new RunningGame(name, minigame, world, id);
@@ -290,7 +290,7 @@ public class MinigameManager
 
         protected void close()
         {
-            MinigameFramework framework = MinigameFramework.getInstance();
+            Ludum framework = Ludum.getInstance();
             Location spawn = framework.getOverworld().getSpawnLocation();
 
             this.game.close();
@@ -316,7 +316,7 @@ public class MinigameManager
             Location location = this.game.positionJoiningPlayer(player);
             location.add(0.5, 0, 0.5);
             location.setWorld(this.world);
-            player.teleportAsync(location, PlayerTeleportEvent.TeleportCause.COMMAND).thenRunAsync(() -> this.game.addPlayer(player), MinigameFramework.getInstance().getMainExecutor());
+            player.teleportAsync(location, PlayerTeleportEvent.TeleportCause.COMMAND).thenRunAsync(() -> this.game.addPlayer(player), Ludum.getInstance().getMainExecutor());
             return true;
         }
 
@@ -330,7 +330,7 @@ public class MinigameManager
             if (!this.world.getPlayers().contains(player))
                 return;
             this.game.removePlayer(player);
-            player.teleportAsync(MinigameFramework.getInstance().getOverworld().getSpawnLocation());
+            player.teleportAsync(Ludum.getInstance().getOverworld().getSpawnLocation());
         }
 
         /**
@@ -354,8 +354,8 @@ public class MinigameManager
         }
         catch (Exception e)
         {
-            MinigameFramework.getInstance().getLog4JLogger().error("Failed to delete " + folder, e);
+            Ludum.getInstance().getLog4JLogger().error("Failed to delete " + folder, e);
         }
-        MinigameFramework.getInstance().getLog4JLogger().debug("Deleted " + folder);
+        Ludum.getInstance().getLog4JLogger().debug("Deleted " + folder);
     }
 }

@@ -1,6 +1,6 @@
-package io.github.ocelot.minigame.api;
+package io.github.ocelot.ludum.api;
 
-import io.github.ocelot.minigame.MinigameFramework;
+import io.github.ocelot.ludum.Ludum;
 import org.bukkit.NamespacedKey;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -37,7 +37,7 @@ public final class MinigameRegistry
     public static synchronized void register(NamespacedKey name, Supplier<Minigame> minigame)
     {
         if (MINIGAMES.put(name, minigame) != null)
-            MinigameFramework.getInstance().getLog4JLogger().warn("Duplicate minigame: " + name);
+            Ludum.getInstance().getLog4JLogger().warn("Duplicate minigame: " + name);
     }
 
     /**
