@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.command.CommandException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -28,18 +29,36 @@ public class MinigameManager
     private static final RunningGame CREATING = new RunningGame()
     {
         @Override
+        protected void tick()
+        {
+        }
+
+        @Override
         protected void close()
+        {
+        }
+
+        @Override
+        public boolean addPlayer(Player player)
+        {
+            return false;
+        }
+
+        @Override
+        public void removePlayer(Player player)
         {
         }
     };
 
     private final Map<String, RunningGame> runningGames;
     private final Set<Integer> usedIds;
+    private final Map<String, CompletableFuture<Boolean>> endingGames;
 
     public MinigameManager()
     {
         this.runningGames = new HashMap<>();
         this.usedIds = new HashSet<>();
+        this.endingGames = new HashMap<>();
     }
 
     private int nextId()
@@ -125,6 +144,27 @@ public class MinigameManager
         }, MinigameFramework.getInstance().getBackgroundExecutor());
     }
 
+    @ApiStatus.Internal
+    public void tick()
+    {
+        this.endingGames.forEach((name, future) -> this.getRunningGame(name).ifPresent(game ->
+        {
+            try
+            {
+                game.close();
+                this.runningGames.remove(name, game);
+                this.usedIds.remove(game.id);
+                future.complete(true);
+            }
+            catch (Throwable t)
+            {
+                future.completeExceptionally(t);
+            }
+        }));
+        this.endingGames.clear();
+        this.runningGames.values().forEach(RunningGame::tick);
+    }
+
     /**
      * Starts a new minigame world.
      *
@@ -146,7 +186,7 @@ public class MinigameManager
             World world = Bukkit.createWorld(new WorldCreator("mini" + id, new NamespacedKey(MinigameFramework.getInstance(), "mini" + id)));
             if (world == null)
                 throw new CommandException("Failed to create minigame server");
-            RunningGame game = new RunningGame(minigame, world, id);
+            RunningGame game = new RunningGame(name, minigame, world, id);
             this.runningGames.put(name, game);
             return game;
         }, executor).exceptionallyAsync(e ->
@@ -161,21 +201,22 @@ public class MinigameManager
      * Stops the minigame with the specified id.
      *
      * @param name The id of the minigame to stop
+     * @return A future for when the minigame actually ends
      */
-    public synchronized void stop(String name)
+    public synchronized CompletableFuture<Boolean> stop(String name)
     {
         RunningGame game = this.runningGames.get(name);
         if (game == null || game == CREATING)
             throw new CommandException("Unknown server: " + name);
-        game.close();
-        this.runningGames.remove(name, game);
-        this.usedIds.remove(game.id);
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        this.endingGames.put(name, future);
+        return future;
     }
 
     /**
      * Stops all minigames and clears all worlds.
      */
-    public synchronized void close()
+    public void close()
     {
         this.runningGames.values().forEach(RunningGame::close);
         this.runningGames.clear();
@@ -219,24 +260,32 @@ public class MinigameManager
      */
     public static class RunningGame
     {
+        private final String name;
         private final Minigame game;
         private final World world;
         private final int id;
 
         private RunningGame()
         {
+            this.name = null;
             this.game = null;
             this.world = null;
             this.id = -1;
         }
 
-        private RunningGame(Minigame game, World world, int id)
+        private RunningGame(String name, Minigame game, World world, int id)
         {
+            this.name = name;
             this.game = game;
             this.world = world;
             this.id = id;
             this.game.setWorld(world);
             this.game.init();
+        }
+
+        protected void tick()
+        {
+            this.game.tick();
         }
 
         protected void close()
@@ -282,6 +331,14 @@ public class MinigameManager
                 return;
             this.game.removePlayer(player);
             player.teleportAsync(MinigameFramework.getInstance().getOverworld().getSpawnLocation());
+        }
+
+        /**
+         * @return The name of this game
+         */
+        public String getName()
+        {
+            return name;
         }
     }
 

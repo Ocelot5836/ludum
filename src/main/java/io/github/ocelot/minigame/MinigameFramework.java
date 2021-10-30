@@ -5,12 +5,12 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.github.ocelot.minigame.api.MinigameManager;
 import io.github.ocelot.minigame.api.MinigameRegistry;
 import io.github.ocelot.minigame.core.MinigameFrameworkEvents;
-import io.github.ocelot.minigame.core.TestMinigame;
 import io.github.ocelot.minigame.core.command.MinigameCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -18,9 +18,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
+ * <p>A system designed for creating new worlds with individual minigames running in them.</p>
+ * <p>To create a new minigame, use {@link MinigameRegistry#register(NamespacedKey, Supplier)} in {@link Plugin#onEnable()}.</p>
+ *
  * @author Ocelot
  */
 public class MinigameFramework extends JavaPlugin
@@ -43,7 +47,6 @@ public class MinigameFramework extends JavaPlugin
         MinigameFramework.instance = this;
 
         MinigameRegistry.flush();
-        MinigameRegistry.register(NamespacedKey.fromString("test", this), TestMinigame::new);
 
         this.overworld = Bukkit.getWorlds().get(0);
 

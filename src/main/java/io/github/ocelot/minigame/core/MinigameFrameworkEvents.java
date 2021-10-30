@@ -1,5 +1,6 @@
 package io.github.ocelot.minigame.core;
 
+import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import io.github.ocelot.minigame.MinigameFramework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,5 +27,11 @@ public class MinigameFrameworkEvents implements Listener
     {
         Player player = event.getPlayer();
         MinigameFramework.getInstance().getMinigameManager().getRunningGame(player.getWorld().getUID()).ifPresent(game -> game.removePlayer(player));
+    }
+
+    @EventHandler
+    public void onEvent(ServerTickStartEvent event)
+    {
+        MinigameFramework.getInstance().getMinigameManager().tick();
     }
 }

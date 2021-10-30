@@ -1,10 +1,12 @@
 package io.github.ocelot.minigame.api;
 
 import io.github.ocelot.minigame.MinigameFramework;
+import io.github.ocelot.minigame.core.DefaultMinigameState;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * <p>A basic minigame in its own world.</p>
@@ -16,11 +18,13 @@ public abstract class Minigame
     protected final Logger logger;
     private final String worldName;
     private World world;
+    private MinigameState state;
 
     public Minigame(String world)
     {
         this.worldName = world;
         this.logger = MinigameFramework.getInstance().getLog4JLogger();
+        this.state = new DefaultMinigameState(this);
     }
 
     /**
@@ -28,6 +32,15 @@ public abstract class Minigame
      */
     public void init()
     {
+        this.state.init();
+    }
+
+    /**
+     * Called when the server ticks.
+     */
+    public void tick()
+    {
+        this.state.tick();
     }
 
     /**
@@ -35,6 +48,19 @@ public abstract class Minigame
      */
     public void close()
     {
+        this.state.close();
+    }
+
+    /**
+     * Stops executing this minigame and moves all players back to the main world.
+     */
+    public void stop()
+    {
+        if (this.world != null)
+        {
+            MinigameManager manager = MinigameFramework.getInstance().getMinigameManager();
+            manager.getRunningGame(this.world.getUID()).ifPresent(game -> manager.stop(game.getName()));
+        }
     }
 
     /**
@@ -91,6 +117,18 @@ public abstract class Minigame
     public World getWorld()
     {
         return world;
+    }
+
+    /**
+     * Changes the current minigame state and sets it up.
+     *
+     * @param state The new state or <code>null</code> to use a default state
+     */
+    public void setState(@Nullable MinigameState state)
+    {
+        this.state.close();
+        this.state = state != null ? state : new DefaultMinigameState(this);
+        this.state.init();
     }
 
     /**
