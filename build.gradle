@@ -34,6 +34,10 @@ jar {
     classifier "slim"
 }
 
+java {
+    withSourcesJar()
+}
+
 shadowJar {
     configurations = [project.configurations.shadow]
     relocate 'co.aikar.commands', 'io.github.ocelot.minigame.acf'
@@ -47,6 +51,9 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             artifact shadowJar
+            artifact(sourcesJar) {
+                classifier "sources"
+            }
         }
     }
     repositories {
