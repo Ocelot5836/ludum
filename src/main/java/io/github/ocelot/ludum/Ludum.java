@@ -67,11 +67,8 @@ public class Ludum extends JavaPlugin
                     {
                         if (e != null)
                         {
-                            getLog4JLogger().warn("{} died", this.getName(), e);
-                        }
-                        else
-                        {
-                            getLog4JLogger().debug("{} shutdown", this.getName());
+                            Bukkit.getLogger().warning(this.getName() + " died");
+                            e.printStackTrace();
                         }
 
                         super.onTermination(e);
@@ -83,7 +80,7 @@ public class Ludum extends JavaPlugin
             {
                 if (e instanceof CompletionException)
                     e = e.getCause();
-                getLog4JLogger().error(String.format("Caught exception in thread %s", t), e);
+                e.printStackTrace();
             }, true);
         }
 
@@ -100,7 +97,7 @@ public class Ludum extends JavaPlugin
                 }
                 catch (Exception e)
                 {
-                    this.getLog4JLogger().error("Failed to create minigames folder stub", e);
+                    e.printStackTrace();
                 }
             });
         }
@@ -125,16 +122,14 @@ public class Ludum extends JavaPlugin
         try
         {
             if (!this.backgroundExecutor.awaitTermination(10, TimeUnit.SECONDS))
-                this.getLog4JLogger().error("Failed to shut down background executor after 10 seconds");
+                Bukkit.getLogger().warning("Failed to shut down background executor after 10 seconds");
         }
         catch (InterruptedException e)
         {
-            this.getLog4JLogger().error("Failed to shut down background executor", e);
+            e.printStackTrace();
         }
         this.backgroundExecutor = null;
         WORKER_COUNT.set(1);
-
-        Bukkit.getLogger().info(ChatColor.RED + "Disabled Starter!");
     }
 
     /**

@@ -36,8 +36,7 @@ public final class MinigameRegistry
      */
     public static synchronized void register(NamespacedKey name, Supplier<Minigame> minigame)
     {
-        if (MINIGAMES.put(name, minigame) != null)
-            Ludum.getInstance().getLog4JLogger().warn("Duplicate minigame: " + name);
+        MINIGAMES.put(name, minigame);
     }
 
     /**

@@ -1,8 +1,5 @@
 package io.github.ocelot.ludum.api;
 
-import io.github.ocelot.ludum.Ludum;
-import org.apache.logging.log4j.Logger;
-
 /**
  * <p>A single state for a minigame currently running.</p>
  *
@@ -10,12 +7,10 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class MinigameState
 {
-    protected final Logger logger;
     protected final Minigame minigame;
 
     public MinigameState(Minigame minigame)
     {
-        this.logger = Ludum.getInstance().getLog4JLogger();
         this.minigame = minigame;
     }
 

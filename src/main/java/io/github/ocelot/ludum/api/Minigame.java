@@ -2,6 +2,7 @@ package io.github.ocelot.ludum.api;
 
 import io.github.ocelot.ludum.Ludum;
 import io.github.ocelot.ludum.core.DefaultMinigameState;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -15,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class Minigame
 {
-    protected final Logger logger;
     private final String worldName;
     private World world;
     private MinigameState state;
@@ -23,7 +23,6 @@ public abstract class Minigame
     public Minigame(String world)
     {
         this.worldName = world;
-        this.logger = Ludum.getInstance().getLog4JLogger();
         this.state = new DefaultMinigameState(this);
     }
 

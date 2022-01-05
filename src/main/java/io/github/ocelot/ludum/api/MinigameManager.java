@@ -354,8 +354,7 @@ public class MinigameManager
         }
         catch (Exception e)
         {
-            Ludum.getInstance().getLog4JLogger().error("Failed to delete " + folder, e);
+            e.printStackTrace();
         }
-        Ludum.getInstance().getLog4JLogger().debug("Deleted " + folder);
     }
 }
