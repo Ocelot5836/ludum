@@ -119,6 +119,14 @@ public abstract class Minigame
     }
 
     /**
+     * @return The current minigame state instance
+     */
+    public MinigameState getState()
+    {
+        return state;
+    }
+
+    /**
      * Changes the current minigame state and sets it up.
      *
      * @param state The new state or <code>null</code> to use a default state
