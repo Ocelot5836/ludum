@@ -313,7 +313,7 @@ public class MinigameManager
             if (!this.game.canJoin(player))
                 return false;
 
-            Location location = this.game.positionJoiningPlayer(player);
+            Location location = this.game.positionJoiningPlayer(player).clone();
             location.add(0.5, 0, 0.5);
             location.setWorld(this.world);
             player.teleportAsync(location, PlayerTeleportEvent.TeleportCause.COMMAND).thenRunAsync(() -> this.game.addPlayer(player), Ludum.getInstance().getMainExecutor());
